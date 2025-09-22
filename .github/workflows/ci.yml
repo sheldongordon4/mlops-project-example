@@ -1,0 +1,48 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'   # adjust if you prefer 3.11
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          make install
+
+      # 4. Run formatter check (Black, non-destructive)
+      - name: Check code formatting
+        run: |
+          source .venv/bin/activate
+          black --check .
+
+      # 5. Run linting (Pylint)
+      - name: Run linter
+        run: |
+          source .venv/bin/activate
+          make lint
+
+      # 6. Run tests (Pytest)
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          make test
+
